@@ -1,0 +1,84 @@
+// creates a database named ProductOrder and a regular collection named Inventory_info, Order_info, Product_info and User_info.
+const database = 'ProductOrder';
+const Inventory_info = 'Inventory_info';
+const Order_info = 'Order_info';
+const Product_info = 'Product_info';
+const User_info = 'User_info';
+
+use(database);
+db.createCollection(Inventory_info);
+db.createCollection(Order_info);
+db.createCollection(Product_info);
+db.createCollection(User_info);
+
+// Select the database to use.
+use('ProductOrder');
+
+// The drop() command destroys all data from a collection.
+// Make sure you run it against the correct database and collection.
+db.ProductOrder.drop();
+
+
+// Display the first 5 rows of product, inventory, user, and order collection.
+use ('ProductOrder');
+db.getCollection('Inventory_info').find({}).limit(5)
+
+use ('ProductOrder');
+db.getCollection('Order_info').find({}).limit(5)
+
+use ('ProductOrder');
+db.getCollection('Product_info').find({}).limit(5)
+
+use ('ProductOrder');
+db.getCollection('User_info').find({}).limit(5)
+
+// Display the Unique Brand and Model names from the Product collection.
+//Diplay Unique brand Model names from Product Collection.
+use ('ProductOrder');
+db.Product_info.distinct('model');
+
+// Find the maximum and minimum price of the given products.
+use ('ProductOrder');
+db.Product_info.find().sort({price:-1}).limit(1) // for MAX
+
+use ('ProductOrder');
+db.Product_info.find().sort({price:+1}).limit(1) // for MIN
+
+//display quantity ,lastupdated date and time for item sku:"SNY-11001".
+use ('ProductOrder');
+db.Product_info.find({"sku":"SNY-11001"}).count();
+
+use ('ProductOrder');
+db.Product_info.find({"sku":"SNY-11001"},{"last_updated":1});
+
+//Supplier count in User Collection
+use ('ProductOrder');
+db.User_info.find({"role":"Supplier"}).count()
+
+//Display 'sku', 'code', 'price', 'brand' and 'warranty' information for the model 'Bravia-X'.
+use ('ProductOrder');
+db.Product_info.find({"model":"Bravia-X"},
+{"sku":1,"code":1,"price":1,"brand":1,"warranty":1})
+
+//information on Sony products that have a Price greaterthan 1 lakh
+use ('ProductOrder');
+db.Product_info.find({$and:[{"brand":"Sony"},
+{"price":{$gt:100000}}]})
+
+//total no of products by each Brand and sort them in descending order. 
+use ('ProductOrder');
+db.Product_info.aggregate([
+    {$match:{}},
+    {$sortByCount: "$brand"}
+])
+
+//total no of users by each role, sort them in descending order and save the results in the temporary collection 
+use ('ProductOrder');
+db.User_info.aggregate([
+    {$match:{}},
+    {$sortByCount: "$role"},
+    {$out:"temp_result"}
+    
+])
+ use ('ProductOrder');
+db.temp_result.find()
